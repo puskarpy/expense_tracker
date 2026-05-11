@@ -1,9 +1,12 @@
-from rest_framework.decorators import APIView, permission_classes
+from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import TransactionSerializer
 from .models import Transaction
+
+from django.db.models import Sum
 
 
 # Create your views here.
@@ -26,33 +29,31 @@ class TransactionViewSet(ModelViewSet):
         
         return [IsAuthenticated()]
 
-
-# def create(request):
-#     serializer = TransactionSerializer(request.data)
-
-#     if serializer.is_valid():
-#         serializer.save(user=request.user)
-
-#         return Response({
-#             "success": True,
-#             "message": "Transaction created successfully.",
-#             "data": serializer.data
-#         }, status=201)
+class DashboardView(APIView):
     
-#     return Response({
-#         "success": False,
-#         "message": "Something went wrong",
-#         "data": serializer.errors
-#     }, status=500)
+    def get(self, request):
+        income = Transaction.objects.filter(
+            user=request.user,
+            type="income"
+        ).aggregate(total=Sum("amount"))["total"] or 0
 
-# def get_all_transactions(request):
-#     transactions = Transaction.objects.all()
+        expense = Transaction.objects.filter(
+            user=request.user,
+            type="expense"
+        ).aggregate(total=Sum("amount"))["total"] or 0
+
+        transaction_count = Transaction.objects.filter(
+            user = request.user
+        ).count()
+
+        return Response({
+            "success": True,
+            "message": "Data fetched successfully.",
+            "data": {
+                "total_income": income,
+                "total_expense": expense,
+                "remaining_balance": income - expense,
+                "transaction_count": transaction_count,
+            }
+        })
     
-#     serializer = TransactionSerializer(transactions, many=True)
-
-#     return Response({
-#         "success": True,
-#         "message": "Transactions fetched successfully",
-#         "data": serializer.data
-#     })
-

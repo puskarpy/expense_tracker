@@ -13,8 +13,8 @@ class Category(models.Model):
 class Transaction(models.Model):
 
     TRANSACTION_TYPES = (
-        ("Income", "income"),
-        ("Expense", "expense"),
+        ("income", "Income"),
+        ("expense", "Expense"),
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
