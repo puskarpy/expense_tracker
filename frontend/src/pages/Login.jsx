@@ -1,9 +1,29 @@
 // pages/LoginPage.jsx
-import React from 'react';
+import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
 import { Wallet } from 'lucide-react';
+import { login } from '../services/auth/auth';
 
 export default function LoginPage() {
+
+  const [formData, setFormData] = useState({
+    username: "",
+    password: ""
+  })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  const handleSubmit = async(e) => {
+    e.preventDefault()
+    try {
+      const data = await login(formData)
+
+    } catch (error) {
+      console.log(error.response?.data || error.message)
+    }
+
+  }
+
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-zinc-900/50 border border-zinc-800 p-10 rounded-[2.5rem] shadow-2xl backdrop-blur-xl">
@@ -15,19 +35,23 @@ export default function LoginPage() {
           <p className="text-zinc-500">Sign in to manage your finances</p>
         </div>
 
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-2">
-            <label className="text-sm font-medium text-zinc-400 ml-1">Email Address</label>
+            <label className="text-sm font-medium text-zinc-400 ml-1">Username</label>
             <input 
-              type="email" 
+              type="text" 
+              value={formData.username}
+              onChange={(e) => setFormData({...formData, username: e.target.value})}
               className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl px-5 py-4 focus:outline-none focus:border-emerald-500 transition-all text-white"
-              placeholder="name@example.com"
+              placeholder="eg: john69"
             />
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium text-zinc-400 ml-1">Password</label>
             <input 
               type="password" 
+              value={formData.password}
+              onChange={(e) => setFormData({...formData, password: e.target.value})}
               className="w-full bg-zinc-950 border border-zinc-800 rounded-2xl px-5 py-4 focus:outline-none focus:border-emerald-500 transition-all text-white"
               placeholder="••••••••"
             />
