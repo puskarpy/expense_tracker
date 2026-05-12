@@ -1,5 +1,7 @@
 // pages/DashboardPage.jsx
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { AuthContext } from '../context/user/AuthProvider';
+import { TransactionContext } from '../context/transaction/TransactionProvider';
 import { Plus, ArrowUpRight, ArrowDownLeft, Wallet, CreditCard } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell } from 'recharts';
 import { StatCard } from '../components';
@@ -22,11 +24,16 @@ const pieData = [
 const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'];
 
 export default function DashboardPage() {
+
+  const {user} = useContext(AuthContext)
+  const {transaction} = useContext(TransactionContext)
+  console.log(transaction)
+
   return (
     <div className="space-y-10 animate-in fade-in duration-700">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Welcome back, User</h1>
+          <h1 className="text-3xl font-bold">Welcome back, {user.first_name + " " + user.last_name}</h1>
           <p className="text-zinc-500">Here's what's happening with your money today.</p>
         </div>
         <button className="bg-emerald-500 hover:bg-emerald-400 text-black px-6 py-3 rounded-2xl font-bold flex items-center gap-2 transition-all active:scale-95 shadow-lg shadow-emerald-500/20 w-fit">
@@ -36,10 +43,10 @@ export default function DashboardPage() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard title="Income" amount="12,450" icon={ArrowUpRight} color="text-emerald-500" />
-        <StatCard title="Expenses" amount="3,120" icon={ArrowDownLeft} color="text-red-500" />
-        <StatCard title="Balance" amount="9,330" icon={Wallet} color="text-zinc-100" />
-        <StatCard title="Transactions" amount="48" icon={CreditCard} color="text-zinc-100" />
+        <StatCard title="Income" amount={transaction?.total_income || 0} icon={ArrowUpRight} color="text-emerald-500" />
+        <StatCard title="Expenses" amount={transaction?.total_expense || 0} icon={ArrowDownLeft} color="text-red-500" />
+        <StatCard title="Balance" amount={transaction?.remaining_balance || 0} icon={Wallet} color="text-zinc-100" />
+        <StatCard title="Transactions" amount={transaction?.transaction_count || 0} icon={CreditCard} color="text-zinc-100" />
       </div>
 
       {/* Charts */}

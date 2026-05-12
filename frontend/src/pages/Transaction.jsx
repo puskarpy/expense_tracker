@@ -1,5 +1,6 @@
 // pages/TransactionsPage.jsx
-import React from 'react';
+import React, {useEffect, useState} from 'react';
+import { getTransactions } from '../services/transaction/dashboard';
 import { Search, Filter, Edit2, Trash2 } from 'lucide-react';
 
 const mockTransactions = [
@@ -9,6 +10,25 @@ const mockTransactions = [
 ];
 
 export default function TransactionsPage() {
+
+  const [transactions, setTransactions] = useState([])
+
+  useEffect(() => {
+    const fetchTransactions = async() => {
+      try {
+        const data = await getTransactions()
+        setTransactions(data)
+        
+      } catch (error) {
+        console.log(error.response?.data || error.message)
+      }
+    }
+
+    fetchTransactions()
+
+  }, [])
+
+
   return (
     <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -36,9 +56,9 @@ export default function TransactionsPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-800">
-            {mockTransactions.map((tx) => (
+            {transactions?.map((tx) => (
               <tr key={tx.id} className="hover:bg-zinc-800/30 transition-colors group">
-                <td className="px-6 py-4 font-medium">{tx.category}</td>
+                <td className="px-6 py-4 font-medium">{tx.category_detail.name}</td>
                 <td className="px-6 py-4 text-zinc-400 text-sm">{tx.date}</td>
                 <td className="px-6 py-4">
                   <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full ${tx.type === 'income' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'}`}>
@@ -46,7 +66,7 @@ export default function TransactionsPage() {
                   </span>
                 </td>
                 <td className={`px-6 py-4 font-semibold ${tx.type === 'income' ? 'text-emerald-500' : 'text-white'}`}>
-                  {tx.type === 'income' ? '+' : '-'}${tx.amount.toFixed(2)}
+                  {tx.type === 'income' ? '+' : '-'}${tx.amount}
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

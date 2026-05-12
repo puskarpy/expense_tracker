@@ -1,8 +1,25 @@
-import React from 'react';
+import React, {useContext} from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/user/AuthProvider';
 import { Camera, Shield, Mail, Bell, Key } from 'lucide-react';
 import { SettingsBlock } from '../components';
 
 export default function ProfilePage() {
+
+  const {user, logoutUser} = useContext(AuthContext)
+
+  const navigate = useNavigate()
+
+  const logout = async() => {
+    try {
+      const token = localStorage.getItem("refresh")
+      await logoutUser({"refresh" : token})
+      navigate("/login")
+    } catch (error) {
+      console.log(error.response?.message || error.message)
+    }
+  }
+
   return (
     <div className="max-w-4xl mx-auto space-y-10 animate-in slide-in-from-bottom-4 duration-500">
       <header>
@@ -25,8 +42,9 @@ export default function ProfilePage() {
           </button>
         </div>
         <div className="text-center md:text-left flex-1">
-          <h2 className="text-2xl font-bold">Pushkar</h2>
-          <p className="text-zinc-500 font-medium">pushkar@example.com</p>
+          <h2 className="text-2xl font-bold">{user.first_name + " " + user.last_name}</h2>
+          <h2 className="text-zinc-400 font-semibold text-sm">@{user.username}</h2>
+          <p className="text-zinc-500 text-sm">{user.email}</p>
           <div className="mt-4 flex flex-wrap justify-center md:justify-start gap-2">
             <span className="px-3 py-1 bg-emerald-500/10 text-emerald-500 text-xs font-bold rounded-full border border-emerald-500/20">PRO PLAN</span>
             <span className="px-3 py-1 bg-zinc-800 text-zinc-400 text-xs font-bold rounded-full">EST. 2024</span>
@@ -47,7 +65,7 @@ export default function ProfilePage() {
 
       <div className="pt-6 border-t border-zinc-800 flex justify-end gap-4">
         <button className="px-6 py-3 text-zinc-500 font-semibold hover:text-zinc-300">Deactivate Account</button>
-        <button className="px-8 py-3 bg-red-500/10 text-red-500 border border-red-500/20 rounded-2xl font-bold hover:bg-red-500/20 transition-all">
+        <button onClick={logout} className="px-8 py-3 bg-red-500/10 text-red-500 border border-red-500/20 rounded-2xl font-bold hover:bg-red-500/20 transition-all">
           Logout
         </button>
       </div>

@@ -1,10 +1,12 @@
 // pages/LoginPage.jsx
-import React, {useState} from 'react';
-import { Link } from 'react-router-dom';
+import React, {useState, useContext} from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Wallet } from 'lucide-react';
-import { login } from '../services/auth/auth';
+import { AuthContext } from '../context/user/AuthProvider';
 
 export default function LoginPage() {
+  const { loginUser } = useContext(AuthContext)
+  const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
     username: "",
@@ -16,12 +18,15 @@ export default function LoginPage() {
   const handleSubmit = async(e) => {
     e.preventDefault()
     try {
-      const data = await login(formData)
-
+      setLoading(true)
+      await loginUser(formData)
+      navigate("/dashboard")
     } catch (error) {
-      console.log(error.response?.data || error.message)
+      console.log(error.response?.message || error.message)
+      setError(error.response?.message || error.message)
+    } finally{
+      setLoading(false)
     }
-
   }
 
   return (
@@ -56,8 +61,12 @@ export default function LoginPage() {
               placeholder="••••••••"
             />
           </div>
+          {
+            error && 
+            <p className='text-sm text-red-500'>{error}</p>
+          }
           <button className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-4 rounded-2xl transition-all shadow-lg shadow-emerald-500/10">
-            Sign In
+            {loading? "Signing in...": "Sign In"}
           </button>
         </form>
 

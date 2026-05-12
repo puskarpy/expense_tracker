@@ -1,5 +1,6 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React, {useContext} from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/user/AuthProvider';
 import { LayoutDashboard, Receipt, BarChart3, User, LogOut, Wallet } from 'lucide-react';
 
 const navItems = [
@@ -10,6 +11,19 @@ const navItems = [
 ];
 
 export default function Sidebar() {
+  const {logoutUser} = useContext(AuthContext)
+  const navigate = useNavigate()
+
+  const logout = async() => {
+    try {
+      const token = localStorage.getItem("refresh")
+      await logoutUser({"refresh" : token})
+      navigate("/login")
+    } catch (error) {
+      console.log(error.response?.message || error.message)
+    }
+  }
+
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 bg-zinc-950 border-r border-zinc-800 flex-col p-6 hidden lg:flex">
       <div className="flex items-center gap-3 mb-10 px-2">
@@ -34,7 +48,7 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      <button className="flex items-center gap-3 px-4 py-3 text-zinc-500 hover:text-red-400 transition-colors mt-auto border-t border-zinc-800 pt-6">
+      <button onClick={logout} className="flex items-center gap-3 px-4 py-3 text-zinc-500 hover:text-red-400 transition-colors mt-auto border-t border-zinc-800 pt-6">
         <LogOut size={20} />
         <span className="font-medium text-sm">Logout</span>
       </button>
