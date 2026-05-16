@@ -1,10 +1,10 @@
-from rest_framework.decorators import permission_classes
+from rest_framework.decorators import api_view,permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import TransactionSerializer
-from .models import Transaction
+from .serializers import TransactionSerializer, CategorySerializer
+from .models import Transaction, Category
 
 from django.db.models import Sum
 
@@ -57,3 +57,19 @@ class DashboardView(APIView):
             }
         })
     
+# class CategoryView(ModelViewSet):
+#     serializer_class = CategorySerializer
+#     # permission_classes=[IsAuthenticated]
+#     def get_queryset(self):
+#             return Category.objects.all()
+
+@api_view(["GET"])
+def get_categories(request):
+    categories = Category.objects.all()
+    serializer = CategorySerializer(categories, many=True)
+
+    return Response({
+        "success": True,
+        "message": "Categories fetched successfully.",
+        "data": serializer.data
+    })

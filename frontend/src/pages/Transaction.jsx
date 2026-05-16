@@ -3,12 +3,6 @@ import React, {useEffect, useState} from 'react';
 import { getTransactions } from '../services/transaction/dashboard';
 import { Search, Filter, Edit2, Trash2 } from 'lucide-react';
 
-const mockTransactions = [
-  { id: 1, category: 'Food', amount: 45.00, type: 'expense', date: '2024-03-20' },
-  { id: 2, category: 'Salary', amount: 3500.00, type: 'income', date: '2024-03-18' },
-  { id: 3, category: 'Software', amount: 29.99, type: 'expense', date: '2024-03-15' },
-];
-
 export default function TransactionsPage() {
 
   const [transactions, setTransactions] = useState([])

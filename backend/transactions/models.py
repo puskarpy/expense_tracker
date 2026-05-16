@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils.timezone import now
+from django.utils.timezone import localdate
 
 # Create your models here.
 
@@ -24,7 +24,7 @@ class Transaction(models.Model):
 
     type = models.CharField(max_length=10, choices=TRANSACTION_TYPES)
     description = models.TextField(blank=True)
-    date = models.DateField(default=now)
+    date = models.DateField(default=localdate)
 
     def __str__(self):
         return f"{self.type} : {self.amount}"
